@@ -43,16 +43,17 @@ class DrawSquare : public rclcpp::Node {
   /// This is the main logic for piloting the square
   void run_loop() {
     // TODO: properly support sim time
-    // pause to make sure publisher and subscribers are ready
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    // the first message is often dropped
+    drive(0.0, 0.0);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     for (int i = 0; i < 4; i++) {
+      if (!e_stop) {
+        std::cout << "driving forward" << std::endl;
+        drive_forward(0.5);
+      }
       if (!e_stop) {
         std::cout << "turning left" << std::endl;
         turn_left();
-      }
-      if (!e_stop) {
-        std::cout << "driving forward" << std::endl;
-        drive_forward(1.0);
       }
     }
     std::cout << "done with run loop" << std::endl;
@@ -63,7 +64,7 @@ class DrawSquare : public rclcpp::Node {
     float angular_vel = 0.3;
     if (!e_stop) {
       drive(0.0, angular_vel);
-      std::this_thread::sleep_for(std::chrono::duration<float>(M_PI / angular_vel));
+      std::this_thread::sleep_for(std::chrono::duration<float>(M_PI / angular_vel / 2.0));
       drive(0.0, 0.0);
     }
   }

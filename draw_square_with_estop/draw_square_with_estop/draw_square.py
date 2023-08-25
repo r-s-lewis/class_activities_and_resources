@@ -44,15 +44,16 @@ class DrawSquare(Node):
         """Executes the main logic for driving the square.  This function does
         not return until the square is finished or the estop is pressed.
         """
-        # pause to make sure publisher and subscribers are ready
-        sleep(2)
+        # the first message on the publisher is often missed
+        self.drive(0.0, 0.0)
+        sleep(1)
         for _ in range(4):
+            if not self.e_stop.is_set():
+                print("driving forward")
+                self.drive_forward(0.5)
             if not self.e_stop.is_set():
                 print("turning left")
                 self.turn_left()
-            if not self.e_stop.is_set():
-                print("driving forward")
-                self.drive_forward(1.0)
         print('done with run loop')
 
     def drive(self, linear, angular):
@@ -73,8 +74,8 @@ class DrawSquare(Node):
         angular_vel = 0.3
         if not self.e_stop.is_set():
             self.drive(linear=0.0, angular=angular_vel)
-        sleep(math.pi / angular_vel)
-        self.drive(linear=0.0, angular=0.0)
+            sleep(math.pi / angular_vel / 2)
+            self.drive(linear=0.0, angular=0.0)
 
     def drive_forward(self, distance):
         """Drive straight for the spefcified distance.
