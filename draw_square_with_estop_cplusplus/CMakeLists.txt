@@ -21,7 +21,14 @@ target_include_directories(draw_square PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_compile_features(draw_square PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
-install(TARGETS draw_square
+add_executable(draw_square_simple src/draw_square_simple.cpp)
+ament_target_dependencies(draw_square_simple rclcpp std_msgs geometry_msgs)
+target_include_directories(draw_square_simple PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(draw_square_simple PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+install(TARGETS draw_square draw_square_simple
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
